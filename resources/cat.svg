@@ -1,0 +1,23 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="200" fill="#f0f0f0"/>
+  
+  <!-- Cat face -->
+  <circle cx="100" cy="100" r="50" fill="#ffcc00"/>
+  <!-- Ears -->
+  <polygon points="60,50 80,20 100,50" fill="#ffcc00"/>
+  <polygon points="100,50 120,20 140,50" fill="#ffcc00"/>
+  <!-- Eyes -->
+  <circle cx="80" cy="90" r="8" fill="#000"/>
+  <circle cx="120" cy="90" r="8" fill="#000"/>
+  <!-- Nose -->
+  <polygon points="95,105 100,110 105,105" fill="#ff6666"/>
+  <!-- Mouth with tongue sticking out -->
+  <path d="M90,120 Q100,130 110,120" fill="none" stroke="#000" stroke-width="2"/>
+  <path d="M100,120 Q105,130 110,125" fill="#ff6666"/>
+  
+  <!-- Text -->
+  <text x="150" y="100" font-family="Arial" font-size="20" fill="#333">
+    The cat got your tongue.
+  </text>
+</svg>

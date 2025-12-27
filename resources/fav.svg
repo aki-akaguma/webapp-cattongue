@@ -1,0 +1,18 @@
+<svg width="140" height="140" viewBox="0 16 140 140" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <!-- rect width="140" height="180" fill="#f0f0f0"/ -->
+  
+  <!-- Cat face -->
+  <circle cx="70" cy="100" r="50" fill="#ffcc00"/>
+  <!-- Ears -->
+  <polygon points="30,50 50,20 70,50" fill="#ffcc00"/>
+  <polygon points="70,50 90,20 110,50" fill="#ffcc00"/>
+  <!-- Eyes -->
+  <circle cx="50" cy="90" r="8" fill="#000"/>
+  <circle cx="90" cy="90" r="8" fill="#000"/>
+  <!-- Nose -->
+  <polygon points="65,105 70,110 75,105" fill="#ff6666"/>
+  <!-- Mouth with tongue sticking out -->
+  <path d="M60,120 Q70,130 80,120" fill="none" stroke="#000" stroke-width="2"/>
+  <path d="M70,122 Q75,134 80,127" fill="#ff6666"/>
+</svg>

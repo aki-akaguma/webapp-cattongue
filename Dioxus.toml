@@ -1,0 +1,38 @@
+[application]
+
+[web.app]
+
+# HTML title tag content
+title = "cat_tongue"
+
+# include `assets` in web platform
+[web.resource]
+
+# Additional CSS style files
+style = []
+
+# Additional JavaScript files
+script = []
+
+[web.resource.dev]
+
+# Javascript code file
+# serve: [dev-server] only
+script = []
+
+[bundle]
+identifier = "com.mycompany"
+publisher = "MyCompany"
+#icon = ["assets/cat-tongue.svg"]
+#icon = ["assets/icon.png"]
+#resource = [""]
+#copyright = ""
+category = "desktop"
+short_description = "a modified dioxus sample."
+long_description = "This is a modified version of the Dioxus sample hot_dog."
+deb = { section = "AAA-desktop", priority = "optional", files = {} }
+
+#[bundle.deb]
+#section = "AAA-desktop"
+#priority = "optional"
+
