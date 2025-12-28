@@ -1,0 +1,27 @@
+diff --git a/src/client.rs b/src/client.rs
+index 09d7c0d..b61b253 100644
+--- a/src/client.rs
++++ b/src/client.rs
+@@ -33,11 +33,17 @@ impl ClientRequest {
+     // Shrink monomorphization bloat by moving this to its own function
+     fn fetch_inner(method: http::Method, path: String, query: String) -> ClientRequest {
+         // On wasm, this doesn't matter since we always use relative URLs when making requests anyways
+-        let mut server_url = get_server_url();
+-
+-        if server_url.is_empty() {
+-            server_url = "http://this.is.not.a.real.url:9000";
+-        }
++        let server_url = {
++            let not_a_real_url = "http://this.is.not.a.real.url:9000";
++            let a_url = get_server_url();
++            if a_url.is_empty() {
++                not_a_real_url.to_string()
++            } else if a_url.starts_with("/") {
++                format!("{not_a_real_url}{a_url}")
++            } else {
++                a_url.to_string()
++            }
++        };
+ 
+         let url = format!(
+             "{server_url}{path}{params}",

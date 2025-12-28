@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+* `patched` by using `patch-crate`
 * supports of `cargo deb`
 * `base_dir` of database file
 * page navigations on the favorites view

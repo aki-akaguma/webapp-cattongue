@@ -15,8 +15,15 @@ rust-version = "1.90.0"
 repository = "https://github.com/aki-akaguma/webapp-cattongue"
 
 
+[package.metadata.patch]
+crates = ["dioxus-fullstack"]
+
+[patch.crates-io]
+dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.2" }
+
 [dependencies]
 dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
+dioxus-fullstack = "0.7.2"
 
 anyhow = { version = "1.0" }
 reqwest = { version = "0.12", features = ["json"] }
