@@ -494,6 +494,7 @@ dependencies = [
  "async-std",
  "const-css-minify",
  "dioxus",
+ "dioxus-fullstack",
  "openssl",
  "regex",
  "reqwest",
@@ -1228,8 +1229,6 @@ dependencies = [
 [[package]]
 name = "dioxus-fullstack"
 version = "0.7.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54150804265defdb21a6f2d8914a45316a1e7fb70ab22c30cf836e8fe2f8081b"
 dependencies = [
  "anyhow",
  "async-stream",

@@ -1,4 +1,4 @@
-# Changelog: cat_tongue
+# Changelog: cattongue
 
 All notable changes to this project will be documented in this file.
 
@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+* backend api signature
 * `patched` by using `patch-crate`
 * supports of `cargo deb`
 * `base_dir` of database file

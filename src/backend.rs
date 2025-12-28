@@ -63,8 +63,8 @@ fn data_dir_on_desktop() -> PathBuf {
 }
 
 // Query the database and return the last 20 cats and their url
-#[cfg_attr(not(feature = "desktop"), server)]
-//#[get("/api/cats")]
+//#[cfg_attr(not(feature = "desktop"), server)]
+#[get("/api/v1/cats")]
 pub async fn list_cats(offset: usize) -> Result<Vec<(usize, String)>> {
     let cats = DB.with(|db| {
         db.prepare("SELECT id, url FROM cats ORDER BY id DESC LIMIT 20 OFFSET ?1")
@@ -81,7 +81,8 @@ pub async fn list_cats(offset: usize) -> Result<Vec<(usize, String)>> {
     Ok(cats)
 }
 
-#[cfg_attr(not(feature = "desktop"), server)]
+//#[cfg_attr(not(feature = "desktop"), server)]
+#[get("/api/v1/count_of_cats")]
 pub async fn count_of_cats() -> Result<usize> {
     let count: usize = DB.with(|db| {
         db.prepare("SELECT count(*) FROM cats")
@@ -96,8 +97,8 @@ pub async fn count_of_cats() -> Result<usize> {
     Ok(count)
 }
 
-#[cfg_attr(not(feature = "desktop"), server)]
-//#[delete("/api/cats/{id}")]
+//#[cfg_attr(not(feature = "desktop"), server)]
+#[delete("/api/v1/cats/{id}")]
 pub async fn delete_cat(id: usize) -> Result<()> {
     DB.with(|f| f.execute("DELETE FROM cats WHERE id = (?1)", [id]))?;
     //
@@ -107,8 +108,8 @@ pub async fn delete_cat(id: usize) -> Result<()> {
     Ok(())
 }
 
-#[cfg_attr(not(feature = "desktop"), server)]
-//#[post("/api/cats")]
+//#[cfg_attr(not(feature = "desktop"), server)]
+#[post("/api/v1/cats")]
 pub async fn save_cat(image: String) -> Result<()> {
     #[cfg(feature = "backend_text")]
     {
