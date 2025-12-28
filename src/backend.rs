@@ -10,12 +10,7 @@ use dioxus::prelude::*;
 #[cfg(any(feature = "server", feature = "desktop"))]
 thread_local! {
     pub static DB: rusqlite::Connection = {
-        let db_path = {
-            let mut data_dir = data_dir();
-            let db_file = "cattongue.db";
-            data_dir.push(db_file);
-            data_dir
-        };
+        let db_path = get_db_path_();
         // Open the database from the persisted "cattongue.db" file
         let conn = rusqlite::Connection::open(db_path).expect("Failed to open database");
 
@@ -32,22 +27,48 @@ thread_local! {
     };
 }
 
+#[cfg(feature = "server")]
+fn get_db_path_() -> PathBuf {
+    let key1 = "CATTONGUE_DB_PATH";
+    if let Ok(s) = std::env::var(key1) {
+        return PathBuf::from(s);
+    }
+    let key2 = "CATTONGUE_DB_BASE_PATH";
+    let mut data_dir = if let Ok(s) = std::env::var(key2) {
+        let pb = PathBuf::from(s);
+        let _ = std::fs::create_dir_all(&pb);
+        pb
+    } else {
+        data_dir()
+    };
+    let key3 = "CATTONGUE_DB_FILE";
+    let db_file = if let Ok(s) = std::env::var(key3) {
+        s
+    } else {
+        "cattongue.db".to_string()
+    };
+    data_dir.push(db_file);
+    data_dir
+}
+
 #[cfg(any(feature = "server", feature = "desktop"))]
 fn data_dir() -> PathBuf {
     #[allow(unused_assignments)]
     let mut data_dir = PathBuf::from(".");
-    #[cfg(feature = "desktop")]
+    #[cfg(not(feature = "backend_homedir"))]
+    {
+        data_dir = PathBuf::from("/var/local/data/cattongue");
+        let _ = std::fs::create_dir_all(&data_dir);
+    }
+    #[cfg(feature = "backend_homedir")]
     {
         data_dir = data_dir_on_desktop();
-    }
-    #[cfg(feature = "server")]
-    {
-        data_dir = PathBuf::from("/var/local/data/cat_tongue");
     }
     return data_dir;
 }
 
-#[cfg(feature = "desktop")]
+#[cfg(feature = "backend_homedir")]
+#[cfg(feature = "server")]
 fn data_dir_on_desktop() -> PathBuf {
     let mut data_dir = match std::env::home_dir() {
         Some(home) => home,
@@ -57,7 +78,7 @@ fn data_dir_on_desktop() -> PathBuf {
         }
     };
     data_dir.push(".data");
-    data_dir.push("cat_tongue");
+    data_dir.push("cattongue");
     let _ = std::fs::create_dir(&data_dir);
     data_dir
 }

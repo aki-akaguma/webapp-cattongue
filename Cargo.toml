@@ -46,12 +46,16 @@ regex = "1.12"
 default = []
 
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop", "dep:rusqlite"]
+desktop = ["dioxus/desktop", "backend_homedir"]
 mobile = ["dioxus/mobile"]
-server = ["dioxus/server", "dep:rusqlite"]
+server = ["dioxus/server", "database"]
+
+database = ["dep:rusqlite"]
 
 backend_delay = ["async-std"]
+backend_homedir = ["database"]
 backend_text = []
+
 debian_build = ["inline_style"]
 inline_style = ["dep:const-css-minify"]
 
