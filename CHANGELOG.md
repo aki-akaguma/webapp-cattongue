@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+* `version`
+* `browserinfocm`
 * backend api signature
 * `patched` by using `patch-crate`
 * supports of `cargo deb`

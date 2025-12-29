@@ -7,6 +7,9 @@ mod backend;
 mod components;
 mod views;
 
+use components::Info;
+use components::Version;
+
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 #[cfg(not(feature = "inline_style"))]
 const MAIN_CSS: Asset = asset!("/assets/main.css");
@@ -14,6 +17,19 @@ const MAIN_CSS: Asset = asset!("/assets/main.css");
 const MAIN_CSS: &str = const_css_minify::minify!("../assets/main.css");
 
 fn main() {
+    // you can set the ports and IP manually with env vars:
+    // server launch:
+    // IP="0.0.0.0" PORT=8080 ./server
+
+    #[cfg(feature = "web")]
+    console_error_panic_hook::set_once();
+
+    #[cfg(not(debug_assertions))]
+    let level = dioxus_logger::tracing::Level::INFO;
+    #[cfg(debug_assertions)]
+    let level = dioxus_logger::tracing::Level::DEBUG;
+    dioxus_logger::init(level).expect("failed to init logger");
+
     /*
     #[cfg(not(feature = "server"))]
     {
@@ -31,8 +47,9 @@ fn App() -> Element {
         document::Link { rel: "icon", href: FAVICON }
         //document::Link { rel: "stylesheet", href: MAIN_CSS }
         MyStyle {}
-
+        Info {}
         Router::<Route> {}
+        Version {}
     }
 }
 
