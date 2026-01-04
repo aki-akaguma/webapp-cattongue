@@ -1,29 +1,23 @@
 use anyhow::Result;
-
-#[allow(unused_imports)]
-use std::path::PathBuf;
-
-#[allow(unused_imports)]
 use dioxus::prelude::*;
 
+#[cfg(feature = "server")]
+use std::cell::RefCell;
+
+#[cfg(feature = "server")]
+use std::path::PathBuf;
+
 // The database is only available to server code
-#[cfg(any(feature = "server", feature = "desktop"))]
+#[cfg(feature = "server")]
 thread_local! {
-    pub static DB: rusqlite::Connection = {
+    pub static DB: RefCell<rusqlite::Connection> = {
         let db_path = get_db_path_();
         // Open the database from the persisted "cattongue.db" file
         let conn = rusqlite::Connection::open(db_path).expect("Failed to open database");
-
-        // Create the "cats" table if it doesn't already exist
-        conn.execute_batch(
-            "CREATE TABLE IF NOT EXISTS cats (
-                id INTEGER PRIMARY KEY,
-                url TEXT NOT NULL
-            );",
-        ).unwrap();
-
+        // Create tables if it doesn't already exist
+        create_tables(&conn).unwrap();
         // Return the connection
-        conn
+        RefCell::new(conn)
     };
 }
 
@@ -51,10 +45,9 @@ fn get_db_path_() -> PathBuf {
     data_dir
 }
 
-#[cfg(any(feature = "server", feature = "desktop"))]
+#[cfg(feature = "server")]
 fn data_dir() -> PathBuf {
-    #[allow(unused_assignments)]
-    let mut data_dir = PathBuf::from(".");
+    let data_dir: PathBuf;
     #[cfg(not(feature = "backend_homedir"))]
     {
         data_dir = PathBuf::from("/var/local/data/cattongue");
@@ -83,53 +76,66 @@ fn data_dir_on_desktop() -> PathBuf {
     data_dir
 }
 
-// Query the database and return the last 20 cats and their url
-//#[cfg_attr(not(feature = "desktop"), server)]
-#[get("/api/v1/cats")]
+/// Query the database and return the last 20 cats and their url
+#[get("/api/v1/cats?off=offset")]
 pub async fn list_cats(offset: usize) -> Result<Vec<(usize, String)>> {
-    let cats = DB.with(|db| {
-        db.prepare("SELECT id, url FROM cats ORDER BY id DESC LIMIT 20 OFFSET ?1")
+    let r = DB.with_borrow_mut(|db| {
+        let tx = db.transaction()?;
+        let cats = tx
+            .prepare("SELECT id, url FROM Cat ORDER BY id DESC LIMIT 20 OFFSET ?1")
             .unwrap()
             .query_map([&offset], |row| Ok((row.get(0)?, row.get(1)?)))
             .unwrap()
             .map(|r| r.unwrap())
-            .collect()
+            .collect();
+        tx.rollback()?;
+        Ok(cats)
     });
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    Ok(cats)
+    r
 }
 
-//#[cfg_attr(not(feature = "desktop"), server)]
-#[get("/api/v1/count_of_cats")]
-pub async fn count_of_cats() -> Result<usize> {
-    let count: usize = DB.with(|db| {
-        db.prepare("SELECT count(*) FROM cats")
+/// Query the database and return the count of cats
+#[post("/api/v1/count_of_cats")]
+pub async fn count_of_cats(_x: String) -> Result<usize> {
+    let r = DB.with_borrow_mut(|db| {
+        let tx = db.transaction()?;
+        let r = tx
+            .prepare("SELECT count(*) FROM Cat")
             .unwrap()
-            .query_one([], |row| Ok(row.get(0)?))
-            .unwrap()
+            .query_one([], |row| Ok(row.get(0)?))?;
+        tx.rollback()?;
+        Ok(r)
     });
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    Ok(count)
+    r
 }
 
-//#[cfg_attr(not(feature = "desktop"), server)]
+/// Query the database and delete the cat
 #[delete("/api/v1/cats/{id}")]
 pub async fn delete_cat(id: usize) -> Result<()> {
-    DB.with(|f| f.execute("DELETE FROM cats WHERE id = (?1)", [id]))?;
+    let r = DB.with_borrow_mut(|db| {
+        let tx = db.transaction()?;
+        tx.prepare("DELETE FROM Cat WHERE id = (?1)")
+            .unwrap()
+            .execute([id])?;
+        tx.commit()?;
+        Ok(())
+    });
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    Ok(())
+    r
 }
 
-//#[cfg_attr(not(feature = "desktop"), server)]
+/// Query the database and save the cat
 #[post("/api/v1/cats")]
 pub async fn save_cat(image: String) -> Result<()> {
     #[cfg(feature = "backend_text")]
@@ -147,17 +153,37 @@ pub async fn save_cat(image: String) -> Result<()> {
         let _ = file.write_fmt(format_args!("{image}\n"));
     }
     //
-    DB.with(|f| f.execute("INSERT INTO cats (url) VALUES (?1)", &[&image]))?;
+    let r = DB.with_borrow_mut(|db| {
+        let tx = db.transaction()?;
+        tx.prepare("INSERT INTO Cat (url) VALUES (?1)")
+            .unwrap()
+            .execute(&[&image])?;
+        tx.commit()?;
+        Ok(())
+    });
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    Ok(())
+    r
 }
 
-#[allow(dead_code)]
 #[cfg(feature = "backend_delay")]
 async fn sleep_x(millis: u64) -> Result<()> {
     async_std::task::sleep(std::time::Duration::from_millis(millis)).await;
+    Ok(())
+}
+
+// Create tables if it doesn't already exist
+#[cfg(feature = "server")]
+fn create_tables(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+    // table: `Cat`
+    conn.execute_batch(
+        "CREATE TABLE IF NOT EXISTS Cat (
+             id INTEGER PRIMARY KEY,
+             url TEXT NOT NULL
+         );",
+    )
+    .unwrap();
     Ok(())
 }

@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+/// the component of loading
 #[component]
 pub(crate) fn ChildrenOrLoading(children: Element) -> Element {
     rsx! {
@@ -15,6 +16,7 @@ pub(crate) fn ChildrenOrLoading(children: Element) -> Element {
     }
 }
 
+/// the component of spinner
 #[component]
 pub(crate) fn OverlaySpinner() -> Element {
     rsx! {

@@ -2,11 +2,13 @@ use crate::OverlaySpinner;
 use dioxus::prelude::*;
 use dioxus_fullstack::Loader;
 
+/// the component of the `Favorites page`
 #[component]
 pub fn Favorites() -> Element {
     let mut is_loading = use_signal(|| false);
     let offset = use_signal(|| 0usize);
-    let count_of_cats = use_loader(move || async move { crate::backend::count_of_cats().await })?;
+    let count_of_cats =
+        use_loader(move || async move { crate::backend::count_of_cats("x".to_string()).await })?;
     let favorites = use_loader(move || async move {
         is_loading.set(true);
         let r = crate::backend::list_cats(*offset.read()).await;

@@ -1,6 +1,7 @@
 use crate::Route;
 use dioxus::prelude::*;
 
+/// the component of navigation bar
 #[component]
 pub fn NavBar() -> Element {
     rsx! {
@@ -8,7 +9,8 @@ pub fn NavBar() -> Element {
             Link { to: Route::CatView,
                 h1 { "🐱 Cat's Tongue! 👅" }
             }
-            Link { to: Route::Favorites, id: "heart", "♥️" }
+            {}
+            Link { to: Route::Favorites {}, id: "heart", "♥️" }
         }
         Outlet::<Route> {}
     }

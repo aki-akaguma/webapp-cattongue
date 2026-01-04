@@ -26,6 +26,8 @@ dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
 dioxus-fullstack = "0.7.2"
 dioxus-logger = "0.7.2"
 
+browserinfocm = "0.1.10"
+
 anyhow = { version = "1.0" }
 console_error_panic_hook = "0.1"
 reqwest = { version = "0.12", features = ["json"] }
@@ -34,8 +36,6 @@ serde = { version = "1.0", features = ["derive"] }
 async-std = { version = "*", optional = true }
 const-css-minify = { version="1.0", optional = true }
 rusqlite = { version = "0.37", optional = true }
-
-browserinfocm = "0.1.7"
 
 [target.'cfg(target_os = "android")'.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }

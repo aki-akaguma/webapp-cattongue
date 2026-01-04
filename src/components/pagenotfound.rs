@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+/// the component of page not found
 #[component]
 pub fn PageNotFound(segments: Vec<String>) -> Element {
     rsx! {
