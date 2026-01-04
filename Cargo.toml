@@ -1,6 +1,6 @@
 [package]
 name = "cattongue"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 This is a modified version of the Dioxus sample hot_dog.
@@ -24,6 +24,7 @@ dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.2" }
 [dependencies]
 dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
 dioxus-fullstack = "0.7.2"
+dioxus-desktop = { version = "0.7.2", optional = true }
 dioxus-logger = "0.7.2"
 
 browserinfocm = "0.1.10"
@@ -42,14 +43,13 @@ openssl = { version = "0.10", features = ["vendored"] }
 
 [build-dependencies]
 rust-version-info-file = "0.2"
-regex = "1.12"
 
 
 [features]
 default = []
 
 web = ["dioxus/web", "browserinfocm/web"]
-desktop = ["dioxus/desktop", "browserinfocm/desktop", "backend_homedir"]
+desktop = ["dioxus/desktop", "browserinfocm/desktop", "dep:dioxus-desktop"]
 mobile = ["dioxus/mobile", "browserinfocm/mobile"]
 server = ["dioxus/server", "browserinfocm/server", "database"]
 

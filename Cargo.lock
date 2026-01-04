@@ -593,7 +593,7 @@ dependencies = [
 
 [[package]]
 name = "cattongue"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "async-std",
@@ -601,10 +601,10 @@ dependencies = [
  "console_error_panic_hook",
  "const-css-minify",
  "dioxus",
+ "dioxus-desktop",
  "dioxus-fullstack",
  "dioxus-logger",
  "openssl",
- "regex",
  "reqwest",
  "rusqlite",
  "rust-version-info-file",

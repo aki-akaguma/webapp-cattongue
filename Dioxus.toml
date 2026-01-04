@@ -21,9 +21,9 @@ script = []
 script = []
 
 [bundle]
-identifier = "com.mycompany"
-publisher = "MyCompany"
-#icon = ["assets/cat-tongue.svg"]
+identifier = "org.omusubi.aki"
+publisher = "aki.akaguma"
+icon = ["resources/cat.png"]
 #icon = ["assets/icon.png"]
 #resource = [""]
 #copyright = ""
