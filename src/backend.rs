@@ -2,23 +2,38 @@ use anyhow::Result;
 use dioxus::prelude::*;
 
 #[cfg(feature = "server")]
-use std::cell::RefCell;
+use std::path::PathBuf;
 
 #[cfg(feature = "server")]
-use std::path::PathBuf;
+use dioxus::fullstack::Lazy;
+
+#[cfg(feature = "server")]
+use sqlx::Row;
 
 // The database is only available to server code
 #[cfg(feature = "server")]
-thread_local! {
-    pub static DB: RefCell<rusqlite::Connection> = {
-        let db_path = get_db_path_();
-        // Open the database from the persisted "cattongue.db" file
-        let conn = rusqlite::Connection::open(db_path).expect("Failed to open database");
-        // Create tables if it doesn't already exist
-        create_tables(&conn).unwrap();
-        // Return the connection
-        RefCell::new(conn)
-    };
+static DB: Lazy<sqlx::SqlitePool> = Lazy::new(|| async move {
+    let pool = create_sqlx_pool().await?;
+    dioxus::Ok(pool)
+});
+
+#[cfg(feature = "server")]
+async fn create_sqlx_pool() -> Result<sqlx::sqlite::SqlitePool> {
+    use sqlx::sqlite::SqliteConnectOptions;
+    use sqlx::sqlite::SqlitePoolOptions;
+    use std::str::FromStr;
+    //
+    let db_path = get_db_path_();
+    let sq_uri = format!("sqlite://{}", db_path.display());
+    // Open the database from the persisted "cattongue.sqlite3" file
+    let opts = SqliteConnectOptions::from_str(&sq_uri)?.create_if_missing(true);
+    let pool = SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect_with(opts)
+        .await?;
+    // Create tables if it doesn't already exist
+    create_tables(&pool).await?;
+    Ok(pool)
 }
 
 #[cfg(feature = "server")]
@@ -39,7 +54,7 @@ fn get_db_path_() -> PathBuf {
     let db_file = if let Ok(s) = std::env::var(key3) {
         s
     } else {
-        "cattongue.db".to_string()
+        "cattongue.sqlite3".to_string()
     };
     data_dir.push(db_file);
     data_dir
@@ -78,61 +93,71 @@ fn data_dir_on_desktop() -> PathBuf {
 
 /// Query the database and return the last 20 cats and their url
 #[get("/api/v1/cats?off=offset")]
-pub async fn list_cats(offset: usize) -> Result<Vec<(usize, String)>> {
-    let r = DB.with_borrow_mut(|db| {
-        let tx = db.transaction()?;
-        let cats = tx
-            .prepare("SELECT id, url FROM Cat ORDER BY id DESC LIMIT 20 OFFSET ?1")
-            .unwrap()
-            .query_map([&offset], |row| Ok((row.get(0)?, row.get(1)?)))
-            .unwrap()
-            .map(|r| r.unwrap())
-            .collect();
-        tx.rollback()?;
-        Ok(cats)
-    });
+pub async fn list_cats(offset: usize) -> Result<Vec<(i64, String)>> {
+    let offset: i64 = offset.try_into()?;
+    let r = {
+        let mut tx = DB.begin().await?;
+        //
+        let cats = sqlx::query(concat!(
+            r#"SELECT id, url FROM Cat"#,
+            r#" ORDER BY id DESC LIMIT 20 OFFSET ?"#
+        ))
+        .bind(offset)
+        .fetch_all(&mut *tx)
+        .await?
+        .iter()
+        .map(|row| (row.get::<i64, _>(0), row.get(1)))
+        .collect();
+        //
+        tx.commit().await?;
+        cats
+    };
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    r
+    Ok(r)
 }
 
 /// Query the database and return the count of cats
 #[post("/api/v1/count_of_cats")]
 pub async fn count_of_cats(_x: String) -> Result<usize> {
-    let r = DB.with_borrow_mut(|db| {
-        let tx = db.transaction()?;
-        let r = tx
-            .prepare("SELECT count(*) FROM Cat")
-            .unwrap()
-            .query_one([], |row| Ok(row.get(0)?))?;
-        tx.rollback()?;
-        Ok(r)
-    });
+    let r = {
+        let mut tx = DB.begin().await?;
+        //
+        let r = sqlx::query(concat!(r#"SELECT count(*) FROM Cat"#,))
+            .fetch_one(&mut *tx)
+            .await?
+            .get::<i64, _>(0) as usize;
+        //
+        tx.commit().await?;
+        r
+    };
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    r
+    Ok(r)
 }
 
 /// Query the database and delete the cat
 #[delete("/api/v1/cats/{id}")]
-pub async fn delete_cat(id: usize) -> Result<()> {
-    let r = DB.with_borrow_mut(|db| {
-        let tx = db.transaction()?;
-        tx.prepare("DELETE FROM Cat WHERE id = (?1)")
-            .unwrap()
-            .execute([id])?;
-        tx.commit()?;
-        Ok(())
-    });
+pub async fn delete_cat(id: i64) -> Result<()> {
+    {
+        let mut tx = DB.begin().await?;
+        //
+        sqlx::query(concat!(r#"DELETE FROM Cat WHERE id = ?"#))
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
+        //
+        tx.commit().await?;
+    }
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    r
+    Ok(())
 }
 
 /// Query the database and save the cat
@@ -153,19 +178,21 @@ pub async fn save_cat(image: String) -> Result<()> {
         let _ = file.write_fmt(format_args!("{image}\n"));
     }
     //
-    let r = DB.with_borrow_mut(|db| {
-        let tx = db.transaction()?;
-        tx.prepare("INSERT INTO Cat (url) VALUES (?1)")
-            .unwrap()
-            .execute(&[&image])?;
-        tx.commit()?;
-        Ok(())
-    });
+    {
+        let mut tx = DB.begin().await?;
+        //
+        sqlx::query(concat!(r#"INSERT INTO Cat (url) VALUES (?)"#))
+            .bind(&image)
+            .execute(&mut *tx)
+            .await?;
+        //
+        tx.commit().await?;
+    }
     //
     #[cfg(feature = "backend_delay")]
     let _ = sleep_x(2000).await;
     //
-    r
+    Ok(())
 }
 
 #[cfg(feature = "backend_delay")]
@@ -176,14 +203,14 @@ async fn sleep_x(millis: u64) -> Result<()> {
 
 // Create tables if it doesn't already exist
 #[cfg(feature = "server")]
-fn create_tables(conn: &rusqlite::Connection) -> rusqlite::Result<()> {
+async fn create_tables(pool: &sqlx::sqlite::SqlitePool) -> Result<()> {
     // table: `Cat`
-    conn.execute_batch(
-        "CREATE TABLE IF NOT EXISTS Cat (
-             id INTEGER PRIMARY KEY,
-             url TEXT NOT NULL
-         );",
-    )
-    .unwrap();
+    const SQL: &str = concat!(
+        r#"CREATE TABLE IF NOT EXISTS Cat ("#,
+        r#" id INTEGER PRIMARY KEY,"#,
+        r#" url TEXT NOT NULL"#,
+        r#");"#,
+    );
+    sqlx::query(SQL).execute(pool).await?;
     Ok(())
 }

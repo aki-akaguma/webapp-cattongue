@@ -48,7 +48,7 @@ pub fn Favorites() -> Element {
             }
             div { id: "favorites-container",
                 for (id , url) in favorites.cloned() {
-                    FavoriteDog {
+                    FavoriteCat {
                         id,
                         url,
                         count_of_cats,
@@ -68,7 +68,7 @@ pub fn Favorites() -> Element {
 pub fn HandLeft(
     offset: Signal<usize>,
     count_of_cats: Loader<usize>,
-    favorites: Loader<Vec<(usize, String)>>,
+    favorites: Loader<Vec<(i64, String)>>,
     is_loading: Signal<bool>,
 ) -> Element {
     rsx! {
@@ -95,7 +95,7 @@ pub fn HandLeft(
 pub fn HandRight(
     offset: Signal<usize>,
     count_of_cats: Loader<usize>,
-    favorites: Loader<Vec<(usize, String)>>,
+    favorites: Loader<Vec<(i64, String)>>,
     is_loading: Signal<bool>,
 ) -> Element {
     rsx! {
@@ -117,11 +117,11 @@ pub fn HandRight(
 }
 
 #[component]
-pub fn FavoriteDog(
-    id: usize,
+pub fn FavoriteCat(
+    id: i64,
     url: String,
     count_of_cats: Loader<usize>,
-    favorites: Loader<Vec<(usize, String)>>,
+    favorites: Loader<Vec<(i64, String)>>,
     is_loading: Signal<bool>,
 ) -> Element {
     // Render a div for each photo using the cat's ID as the list key
