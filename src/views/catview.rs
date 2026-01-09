@@ -40,7 +40,7 @@ pub fn CatView() -> Element {
                 onclick: move |_| async move {
                     let current = img_src.cloned().unwrap();
                     img_src.restart();
-                    _ = crate::backend::save_cat(current).await;
+                    _ = crate::backends::save_cat(current).await;
                 },
                 id: "save",
                 "save!"

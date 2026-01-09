@@ -10,7 +10,7 @@ list:
 .PHONY: list
 
 bundle-web:
-	dx bundle --web --release --base-path "/broinfo"
+	dx bundle --web --release --base-path "/cattongue"
 
 bundle-desktop:
 	dx bundle --desktop --release

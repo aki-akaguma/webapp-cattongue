@@ -42,14 +42,7 @@ fn get_db_path_() -> PathBuf {
     if let Ok(s) = std::env::var(key1) {
         return PathBuf::from(s);
     }
-    let key2 = "CATTONGUE_DB_BASE_PATH";
-    let mut data_dir = if let Ok(s) = std::env::var(key2) {
-        let pb = PathBuf::from(s);
-        let _ = std::fs::create_dir_all(&pb);
-        pb
-    } else {
-        data_dir()
-    };
+    let mut data_dir = super::data_base_dir();
     let key3 = "CATTONGUE_DB_FILE";
     let db_file = if let Ok(s) = std::env::var(key3) {
         s
@@ -60,35 +53,16 @@ fn get_db_path_() -> PathBuf {
     data_dir
 }
 
-#[cfg(feature = "server")]
-fn data_dir() -> PathBuf {
-    let data_dir: PathBuf;
-    #[cfg(not(feature = "backend_homedir"))]
-    {
-        data_dir = PathBuf::from("/var/local/data/cattongue");
-        let _ = std::fs::create_dir_all(&data_dir);
+#[post("/api/v1/session", session: tower_sessions::Session)]
+pub async fn check_session(bicmid: String) -> Result<bool> {
+    if let Some(session_bicmid) = session.get::<String>("bicmid").await? {
+        dioxus_logger::tracing::debug!("bicmid: '{}' '{}'", &session_bicmid, &bicmid);
+        Ok(bicmid.as_str() == session_bicmid.as_str())
+    } else {
+        dioxus_logger::tracing::debug!("insert bicmid: '{}'", &bicmid);
+        session.insert("bicmid", &bicmid).await?;
+        Ok(true)
     }
-    #[cfg(feature = "backend_homedir")]
-    {
-        data_dir = data_dir_on_desktop();
-    }
-    return data_dir;
-}
-
-#[cfg(feature = "backend_homedir")]
-#[cfg(feature = "server")]
-fn data_dir_on_desktop() -> PathBuf {
-    let mut data_dir = match std::env::home_dir() {
-        Some(home) => home,
-        None => {
-            eprintln!("could NOT get `home_dir()`");
-            PathBuf::from(".")
-        }
-    };
-    data_dir.push(".data");
-    data_dir.push("cattongue");
-    let _ = std::fs::create_dir(&data_dir);
-    data_dir
 }
 
 /// Query the database and return the last 20 cats and their url

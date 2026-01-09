@@ -5,7 +5,7 @@ use dioxus_desktop::{Config, WindowBuilder};
 use components::*;
 use views::{CatView, Favorites};
 
-mod backend;
+mod backends;
 mod components;
 mod views;
 
@@ -36,6 +36,7 @@ fn main() {
     }
 
     // In the case of only release desktop, set a window title
+    #[cfg(not(feature = "server"))]
     #[cfg(all(not(debug_assertions), feature = "desktop"))]
     dioxus::LaunchBuilder::new()
         .with_cfg(
@@ -48,8 +49,31 @@ fn main() {
         .launch(App);
 
     // In the other case, simple launch app
+    #[cfg(not(feature = "server"))]
     #[cfg(any(debug_assertions, not(feature = "desktop")))]
     dioxus::launch(App);
+
+    #[cfg(feature = "server")]
+    dioxus::serve(|| async {
+        let cookie_path = match std::env::var("DIOXUS_ASSET_ROOT") {
+            Ok(s) => format!("/{s}"),
+            Err(_e) => "/".to_string(),
+        };
+        dioxus_logger::tracing::info!("cookie_path: '{}'", &cookie_path);
+        let session_layer = {
+            use tower_sessions::{cookie::time::Duration, Expiry, SessionManagerLayer};
+            let store = crate::backends::session_store().await.unwrap();
+            SessionManagerLayer::new(store)
+                .with_name("cttg.sid")
+                .with_path(cookie_path)
+                .with_secure(false) // https
+                .with_always_save(false)
+                .with_expiry(Expiry::OnInactivity(Duration::days(30)))
+                .with_same_site(tower_sessions::cookie::SameSite::Lax)
+        };
+        //
+        Ok(dioxus::server::router(App).layer(session_layer))
+    })
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -98,4 +122,14 @@ enum Route {
     // We can collect the segments of the URL into a Vec<String>
     #[route("/:..segments")]
     PageNotFound { segments: Vec<String> },
+}
+
+#[cfg(not(target_family = "wasm"))]
+pub async fn async_sleep(dur: std::time::Duration) {
+    tokio::time::sleep(dur).await;
+}
+
+#[cfg(target_family = "wasm")]
+pub async fn async_sleep(dur: std::time::Duration) {
+    gloo_timers::future::sleep(dur).await;
 }

@@ -8,10 +8,10 @@ pub fn Favorites() -> Element {
     let mut is_loading = use_signal(|| false);
     let offset = use_signal(|| 0usize);
     let count_of_cats =
-        use_loader(move || async move { crate::backend::count_of_cats("x".to_string()).await })?;
+        use_loader(move || async move { crate::backends::count_of_cats("x".to_string()).await })?;
     let favorites = use_loader(move || async move {
         is_loading.set(true);
-        let r = crate::backend::list_cats(*offset.read()).await;
+        let r = crate::backends::list_cats(*offset.read()).await;
         is_loading.set(false);
         r
     })?;
@@ -20,7 +20,7 @@ pub fn Favorites() -> Element {
     // Wait for the favorites list to resolve with `.suspend()`
     let favorites = use_resource(move || async move {
         is_loading.set(true);
-        let r = crate::backend::list_cats().await;
+        let r = crate::backends::list_cats().await;
         is_loading.set(false);
         r
     });
@@ -131,7 +131,7 @@ pub fn FavoriteCat(
             button {
                 onclick: move |_| async move {
                     is_loading.set(true);
-                    _ = crate::backend::delete_cat(id).await;
+                    _ = crate::backends::delete_cat(id).await;
                     count_of_cats.restart();
                     favorites.restart();
                 },
