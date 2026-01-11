@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+* crate: `async-sleep-aki`
 * `bicmid_id` column into `Cat` table
 * session with `tower-sessions`
 

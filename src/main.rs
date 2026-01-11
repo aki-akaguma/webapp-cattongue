@@ -123,13 +123,3 @@ enum Route {
     #[route("/:..segments")]
     PageNotFound { segments: Vec<String> },
 }
-
-#[cfg(not(target_family = "wasm"))]
-pub async fn async_sleep(dur: std::time::Duration) {
-    tokio::time::sleep(dur).await;
-}
-
-#[cfg(target_family = "wasm")]
-pub async fn async_sleep(dur: std::time::Duration) {
-    gloo_timers::future::sleep(dur).await;
-}

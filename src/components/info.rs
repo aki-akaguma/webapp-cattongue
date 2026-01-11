@@ -30,7 +30,7 @@ pub fn Info() -> Element {
                 loop {
                     bicmid = bicmid_sig.read().clone();
                     if bicmid.is_empty() {
-                        crate::async_sleep(Duration::from_millis(1)).await;
+                        async_sleep_aki::async_sleep(Duration::from_millis(1)).await;
                         continue;
                     }
                     break;
