@@ -62,6 +62,7 @@ pub fn CatView() -> Element {
         let resp = reqwest::get(url).await;
         if let Err(_e) = resp {
             dioxus_logger::tracing::info!("error: {_e}");
+            is_loading.set(false);
             "".to_string()
         } else {
             let body = resp.unwrap();
