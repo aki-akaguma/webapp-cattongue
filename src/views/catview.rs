@@ -1,5 +1,5 @@
 use crate::OverlaySpinner;
-use async_sleep_aki::{async_sleep, Duration};
+use async_sleep_aki::{async_sleep, delayed_call};
 use dioxus::prelude::*;
 
 #[allow(dead_code)]
@@ -11,16 +11,8 @@ struct CatApi {
     height: i64,
 }
 
-async fn delay_call<F>(delay: u64, f: F)
-where
-    F: std::future::Future<Output = ()> + 'static,
-{
-    async_sleep(Duration::from_millis(delay)).await;
-    f.await;
-}
-
 async fn check_complete(mut is_loading: Signal<bool>) {
-    async_sleep(Duration::from_millis(400)).await;
+    async_sleep(400).await;
     let js: &str = concat!(
         r#"function img_complete(elem_id) {"#,
         r#" const elem = document.getElementById(elem_id); "#,
@@ -36,14 +28,14 @@ async fn check_complete(mut is_loading: Signal<bool>) {
         let v = document::eval(js).await.unwrap();
         let s = v.to_string();
         if s == "true" {
-            async_sleep(Duration::from_millis(200)).await;
+            async_sleep(200).await;
             if *is_loading.read() {
                 is_loading.set(false);
             }
             break;
         } else {
             dioxus_logger::tracing::debug!("img elem: '{s:?}'");
-            async_sleep(Duration::from_millis(100)).await;
+            async_sleep(100).await;
         }
         if !*is_loading.read() {
             break;
@@ -55,28 +47,36 @@ async fn check_complete(mut is_loading: Signal<bool>) {
 #[component]
 pub fn CatView() -> Element {
     let mut is_loading = use_signal(|| false);
+    let mut loading_count = use_signal(|| 0i64);
     let mut img_src = use_resource(move || async move {
         is_loading.set(true);
+        loading_count += 1;
         //let url = "https://aws.random.cat/meow";
         let url = "https://api.thecatapi.com/v1/images/search";
         let resp = reqwest::get(url).await;
-        if let Err(_e) = resp {
+        let r = if let Err(_e) = resp {
             dioxus_logger::tracing::info!("error: {_e}");
             is_loading.set(false);
             "".to_string()
         } else {
             let body = resp.unwrap();
-            let r = body.json::<Vec<CatApi>>().await.unwrap()[0].url.clone();
+            let r1 = body.json::<Vec<CatApi>>().await.unwrap()[0].url.clone();
             spawn(async move {
-                spawn(delay_call(2000, async move {
+                async_sleep(20).await;
+                spawn(delayed_call(2000, async move {
                     if *is_loading.read() {
                         is_loading.set(false);
                     }
                 }));
                 spawn(check_complete(is_loading));
             });
-            r
+            r1
+        };
+        loading_count -= 1;
+        if *loading_count.read() > 0 {
+            dioxus_logger::tracing::info!("loading_count: '{}'", *loading_count.read());
         }
+        r
     });
 
     rsx! {

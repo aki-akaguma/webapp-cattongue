@@ -1,7 +1,6 @@
 use browserinfocm::browserinfo::{BroInfo, Browser};
 use browserinfocm::BrowserInfoCm;
 use dioxus::prelude::*;
-use std::time::Duration;
 
 /// the component of browser information
 #[component]
@@ -30,7 +29,7 @@ pub fn Info() -> Element {
                 loop {
                     bicmid = bicmid_sig.read().clone();
                     if bicmid.is_empty() {
-                        async_sleep_aki::async_sleep(Duration::from_millis(1)).await;
+                        async_sleep_aki::async_sleep(1).await;
                         continue;
                     }
                     break;

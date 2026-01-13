@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * session with `tower-sessions`
 
 ### Changed
+* updated crate: browserinfocm(0.1.11)
 * Finely tuned the `loading view` using `async_sleep()`
 * migrated from `rusqlite` to `sqlx with sqlite`
 

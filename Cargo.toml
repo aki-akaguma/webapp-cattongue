@@ -32,8 +32,8 @@ tower-sessions-sqlx-store = { version = "0.15", features = ["sqlite"], optional 
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"], optional = true }
 
 #browserinfocm = { path = "../browserinfocm", default-features = false }
-browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
-#browserinfocm = "0.1.10"
+#browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
+browserinfocm = "0.1.11"
 
 anyhow = { version = "1.0" }
 console_error_panic_hook = "0.1"
