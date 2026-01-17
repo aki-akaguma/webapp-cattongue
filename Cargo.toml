@@ -1,6 +1,6 @@
 [package]
 name = "cattongue"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 This is a modified version of the Dioxus sample hot_dog.
