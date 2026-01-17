@@ -18,14 +18,14 @@ repository = "https://github.com/aki-akaguma/webapp-cattongue"
 [package.metadata.patch]
 crates = ["dioxus-fullstack"]
 
-[patch.crates-io]
-dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.2" }
+#[patch.crates-io]
+#dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.3" }
 
 [dependencies]
-dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
-dioxus-fullstack = "0.7.2"
-dioxus-desktop = { version = "0.7.2", optional = true }
-dioxus-logger = "0.7.2"
+dioxus = { version = "0.7.3", features = ["router", "fullstack"] }
+dioxus-fullstack = "0.7.3"
+dioxus-desktop = { version = "0.7.3", optional = true }
+dioxus-logger = "0.7.3"
 
 tower-sessions = { version = "0.14", optional = true }
 tower-sessions-sqlx-store = { version = "0.15", features = ["sqlite"], optional = true }
@@ -33,7 +33,7 @@ sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"], optiona
 
 #browserinfocm = { path = "../browserinfocm", default-features = false }
 #browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
-browserinfocm = "0.1.11"
+browserinfocm = "0.1.12"
 
 anyhow = { version = "1.0" }
 console_error_panic_hook = "0.1"

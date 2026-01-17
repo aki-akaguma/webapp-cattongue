@@ -9,6 +9,9 @@ list:
 
 .PHONY: list
 
+apply-patch:
+	cargo patch-crate
+
 bundle-web:
 	dx bundle --web --release --base-path "/cattongue"
 
