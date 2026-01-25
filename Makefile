@@ -9,6 +9,9 @@ list:
 
 .PHONY: list
 
+clean:
+	cargo clean
+
 apply-patch:
 	cargo patch-crate
 
@@ -20,6 +23,20 @@ bundle-desktop:
 
 #	dx bundle --desktop --release --features backend_next
 
-bundle-android:
+bundle-android-aarch64:
+	@rm -fr "target/dx"
 	dx bundle --android --release --target=aarch64-linux-android
+	./scripts/apk-icon-assemble-r.sh cattongue aarch64 resources/android
 
+bundle-android-x86_64:
+	@rm -fr "target/dx"
+	dx bundle --android --release --target=x86_64-linux-android
+	./scripts/apk-icon-assemble-r.sh cattongue x86_64 resources/android
+
+bundle-android-wv:
+	@rm -fr "target/dx"
+	./scripts/wv-apk-icon-assemble-r.sh cattongue resources/android ./scripts/android-webview-params.toml
+
+bundle-android-wva:
+	@rm -fr "target/dx"
+	./scripts/wva-apk-icon-assemble-r.sh cattongue resources/android resources/android ./scripts/android-webview-assets-params.toml

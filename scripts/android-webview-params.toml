@@ -1,0 +1,12 @@
+# This is a template parameter used by guic (guidon cli).
+[variables]
+project_name = "cattongue"
+app_name = "CattongueWv"
+package_id = "org.omusubi.aki.wv.cattongue"
+version_code = "1"
+version_name = "0.1"
+load_url = "https://aki.omusubi.org/cattongue/"
+#
+compile_sdk_version = "36"
+target_sdk_version = "36"
+min_sdk_version = "28"
