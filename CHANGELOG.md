@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * android webview assets support
 * android webview support
 
+### Changed
+* identifier = "org.omusubi.aki.nt.cattongue"
+
 
 ## [0.1.5] (2026-01-19)
 ### Added

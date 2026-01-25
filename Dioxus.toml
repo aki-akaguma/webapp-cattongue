@@ -25,7 +25,7 @@ script = []
 script = []
 
 [bundle]
-identifier = "org.omusubi.aki.app.cattongue"
+identifier = "org.omusubi.aki.nt.cattongue"
 publisher = "aki.akaguma"
 
 icon = [
