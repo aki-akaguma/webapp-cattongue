@@ -12,7 +12,12 @@ fn main() {
     };
     rust_version_info_file(path.as_str(), "Cargo.toml");
     //
+    android_native_proc();
+}
+
+fn android_native_proc() {
     // android
+    // override build.gradle.kts
     let path = format!(
         "target/dx/{}/release/android/app/app/build.gradle.kts",
         env!("CARGO_PKG_NAME")
@@ -32,6 +37,8 @@ fn main() {
                     env!("CARGO_PKG_VERSION"),
                     vc
                 ));
+            } else if let Some(_idx) = line.find("minSdk") {
+                outs.push("        minSdk = 26".to_string());
             } else {
                 outs.push(line.to_string());
             }
