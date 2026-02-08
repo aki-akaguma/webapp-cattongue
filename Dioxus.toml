@@ -29,7 +29,7 @@ identifier = "org.omusubi.aki.nt.cattongue"
 publisher = "aki.akaguma"
 
 icon = [
-  "resources/cat.png",
+  "assets/app.png",
   "assets/favicon.ico"
 ]
 

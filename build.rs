@@ -38,7 +38,7 @@ fn android_native_proc() {
                     vc
                 ));
             } else if let Some(_idx) = line.find("minSdk") {
-                outs.push("        minSdk = 26".to_string());
+                outs.push("        minSdk = 30".to_string());
             } else {
                 outs.push(line.to_string());
             }
