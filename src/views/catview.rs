@@ -1,5 +1,6 @@
 use crate::OverlaySpinner;
-use async_sleep_aki::{async_sleep, delayed_call};
+use async_sleep_aki::async_sleep;
+use async_sleep_aki::{postponed_call, PostponedCall};
 use dioxus::prelude::*;
 
 #[allow(dead_code)]
@@ -11,36 +12,57 @@ struct CatApi {
     height: i64,
 }
 
-async fn check_complete(mut is_loading: Signal<bool>) {
+async fn button_enable(btn_id: &str, enabled: bool) {
+    let js = format!(
+        concat!(
+            "{{const elem = document.getElementById(\"{}\");",
+            "if (elem) {{elem.disabled = {};return \"ok\";}}",
+            "else {{return \"err: not found: '{}'\";}}",
+            "}}"
+        ),
+        btn_id, !enabled, btn_id
+    );
+    let _v = document::eval(&js).await.unwrap();
+}
+
+async fn check_complete(mut is_loading: Signal<bool>, mut postponed: Signal<PostponedCall>) {
     async_sleep(400).await;
+    // read the complete property on javascript
     let js: &str = concat!(
-        r#"function img_complete(elem_id) {"#,
-        r#" const elem = document.getElementById(elem_id); "#,
-        r#" if (elem) { "#,
+        r#"{"#,
+        r#"const elem = document.getElementById('catimg'); "#,
+        r#"if (elem) {"#,
         r#"  return elem.complete; "#,
-        r#" } else {"#,
+        r#"} else {"#,
         r#"  return 'not found #catimg';"#,
-        r#" }"#,
+        r#"};"#,
         r#"}"#,
-        r#"return img_complete('catimg');"#
     );
     loop {
         let v = document::eval(js).await.unwrap();
         let s = v.to_string();
         if s == "true" {
-            async_sleep(200).await;
+            //dioxus_logger::tracing::debug!("img elem: '{s:?}'");
             if *is_loading.read() {
                 is_loading.set(false);
+                dioxus_logger::tracing::debug!("set is_loading: false");
+            } else {
+                dioxus_logger::tracing::debug!("already is_loading: false");
             }
             break;
         } else {
-            dioxus_logger::tracing::debug!("img elem: '{s:?}'");
-            async_sleep(100).await;
+            //dioxus_logger::tracing::debug!("img elem: '{s:?}'");
+            async_sleep(50).await;
         }
         if !*is_loading.read() {
+            dioxus_logger::tracing::debug!("is_loading: false");
             break;
         }
     }
+    let a = postponed_call(10, move || {});
+    let _ = postponed.replace(a);
+    button_enable("skip", true).await;
+    button_enable("save", true).await;
 }
 
 /// the component of the `Cat page`
@@ -48,8 +70,10 @@ async fn check_complete(mut is_loading: Signal<bool>) {
 pub fn CatView() -> Element {
     let mut is_loading = use_signal(|| false);
     let mut loading_count = use_signal(|| 0i64);
+    let mut postponed = use_signal(|| postponed_call(10, move || {}));
     let mut img_src = use_resource(move || async move {
         is_loading.set(true);
+        dioxus_logger::tracing::debug!("set is_loading: true");
         loading_count += 1;
         //let url = "https://aws.random.cat/meow";
         let url = "https://api.thecatapi.com/v1/images/search";
@@ -60,17 +84,26 @@ pub fn CatView() -> Element {
             "".to_string()
         } else {
             let body = resp.unwrap();
-            let r1 = body.json::<Vec<CatApi>>().await.unwrap()[0].url.clone();
-            spawn(async move {
-                async_sleep(20).await;
-                spawn(delayed_call(2000, async move {
+            let r = body.json::<Vec<CatApi>>().await;
+            if let Err(_e) = r {
+                dioxus_logger::tracing::info!("error: {_e}");
+                is_loading.set(false);
+                "".to_string()
+            } else {
+                let r1 = r.unwrap()[0].url.clone();
+                let a = postponed_call(3000, move || {
+                    dioxus_logger::tracing::debug!("postponed: call");
                     if *is_loading.read() {
                         is_loading.set(false);
+                        let a = postponed_call(10, move || {});
+                        let _ = postponed.replace(a);
+                        dioxus_logger::tracing::debug!("postponed: set is_loading: false");
                     }
-                }));
-                spawn(check_complete(is_loading));
-            });
-            r1
+                });
+                let _ = postponed.replace(a);
+                spawn(check_complete(is_loading, postponed));
+                r1
+            }
         };
         loading_count -= 1;
         if *loading_count.read() > 0 {
@@ -81,12 +114,25 @@ pub fn CatView() -> Element {
 
     rsx! {
         div { id: "catview",
-            img { id: "catimg", src: img_src.cloned().unwrap_or_default() }
+            img {
+                id: "catimg",
+                src: img_src.cloned().unwrap_or_default(),
+            }
         }
         div { id: "buttons",
-            button { onclick: move |_| img_src.restart(), id: "skip", "skip" }
             button {
                 onclick: move |_| async move {
+                    button_enable("skip", false).await;
+                    button_enable("save", false).await;
+                    img_src.restart();
+                },
+                id: "skip",
+                "skip"
+            }
+            button {
+                onclick: move |_| async move {
+                    button_enable("skip", false).await;
+                    button_enable("save", false).await;
                     let current = img_src.cloned().unwrap();
                     img_src.restart();
                     _ = crate::backends::save_cat(current).await;
