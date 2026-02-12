@@ -298,9 +298,9 @@ dependencies = [
 
 [[package]]
 name = "browserinfo"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f61978899f0c84dc3ff96e3539ef5f230f690d96f6c4f89df4f95a139e28bf5"
+checksum = "182abe22c101a109af9524cfd631e55e27a9efae614d3052bc54f8021e93da13"
 dependencies = [
  "anyhow",
  "serde",
@@ -311,9 +311,9 @@ dependencies = [
 
 [[package]]
 name = "browserinfocm"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b22f429ab8e4bfd953e36133478eda81a0d0146b3512cfc1760ea8e325f331f"
+checksum = "f566b08a99fc3778dda7597be9be3334b86e5a14ba0503fd9cb5832b0a5a5e40"
 dependencies = [
  "anyhow",
  "async-sleep-aki",
@@ -3083,7 +3083,7 @@ checksum = "3d0b95e02c851351f877147b7deea7b1afb1df71b63aa5f8270716e0c5720616"
 dependencies = [
  "bitflags 2.10.0",
  "libc",
- "redox_syscall 0.7.0",
+ "redox_syscall 0.7.1",
 ]
 
 [[package]]
@@ -4327,9 +4327,9 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49f3fe0889e69e2ae9e41f4d6c4c0181701d00e4697b356fb1f74173a5e0ee27"
+checksum = "35985aa610addc02e24fc232012c86fd11f14111180f902b67e2d5331f8ebf2b"
 dependencies = [
  "bitflags 2.10.0",
 ]
