@@ -18,14 +18,14 @@ repository = "https://github.com/aki-akaguma/webapp-cattongue"
 [package.metadata.patch]
 crates = ["dioxus-fullstack"]
 
-#[patch.crates-io]
-#dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.3" }
+[patch.crates-io]
+dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.4" }
 
 [dependencies]
-dioxus = { version = "0.7.3", features = ["router", "fullstack"] }
-dioxus-fullstack = "0.7.3"
-dioxus-desktop = { version = "0.7.3", optional = true }
-dioxus-logger = "0.7.3"
+dioxus = { version = "0.7.4", features = ["router", "fullstack"] }
+dioxus-fullstack = "0.7.4"
+dioxus-desktop = { version = "0.7.4", optional = true }
+dioxus-logger = "0.7.4"
 
 tower-sessions = { version = "0.14", optional = true }
 tower-sessions-sqlx-store = { version = "0.15", features = ["sqlite"], optional = true }
@@ -33,17 +33,19 @@ sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"], optiona
 
 #browserinfocm = { path = "../browserinfocm", default-features = false }
 #browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
-browserinfocm = "0.1.14"
+browserinfocm = "0.1.15"
+
+#async-sleep-aki = {path="../async-sleep-aki"}
+async-sleep-aki = "0.1"
 
 anyhow = { version = "1.0" }
 console_error_panic_hook = "0.1"
-reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 
 const-css-minify = { version="1.0", optional = true }
 
-async-sleep-aki = "0.1"
-#async-sleep-aki = {path="../async-sleep-aki"}
+# depend on dioxus
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
@@ -86,3 +88,8 @@ assets = [
     ["target/rust-version-info.txt", "usr/share/doc/cat-tongue/", "644"],
     ["README.md", "usr/share/doc/cat-tongue/", "644"],
 ]
+
+[profile.release]
+strip = "debuginfo"
+opt-level = "s"
+lto = true

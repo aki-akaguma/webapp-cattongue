@@ -5,6 +5,8 @@ app_name = "CattongueWva"
 package_id = "org.omusubi.aki.wva.cattongue"
 version_code = "1"
 version_name = "0.1"
+#load_url = "https://appassets.androidplatform.net/assets/pre.html"
+load_url = "https://aki.omusubi.org/cattongue/"
 #
 compile_sdk_version = "36"
 target_sdk_version = "36"
