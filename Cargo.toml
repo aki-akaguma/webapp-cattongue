@@ -19,12 +19,12 @@ repository = "https://github.com/aki-akaguma/webapp-cattongue"
 crates = ["dioxus-fullstack"]
 
 [patch.crates-io]
-dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.4" }
+dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.5" }
 
 [dependencies]
-dioxus = { version = "0.7.4", features = ["router", "fullstack"] }
-dioxus-fullstack = "0.7.4"
-dioxus-desktop = { version = "0.7.4", optional = true }
+dioxus = { version = "0.7.5", features = ["router", "fullstack"] }
+dioxus-fullstack = "0.7.5"
+dioxus-desktop = { version = "0.7.5", optional = true }
 dioxus-logger = "0.7.4"
 
 tower-sessions = { version = "0.14", optional = true }
@@ -33,7 +33,7 @@ sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"], optiona
 
 #browserinfocm = { path = "../browserinfocm", default-features = false }
 #browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
-browserinfocm = "0.1.15"
+browserinfocm = "0.1.16"
 
 #async-sleep-aki = {path="../async-sleep-aki"}
 async-sleep-aki = "0.1"
