@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+* error resiliency in `src/view/catview.rs`
 * update crate: dioxus(0.7.6)
 * I reorganized the dependencies in `Cargo.toml`.
 * updated crates: browserinfocm(0.2.0)

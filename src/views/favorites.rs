@@ -47,7 +47,7 @@ pub fn Favorites() -> Element {
                 }
             }
             div { id: "favorites-container",
-                for (id , url) in favorites.cloned() {
+                for (id, url) in favorites.cloned() {
                     FavoriteCat {
                         id,
                         url,

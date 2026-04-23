@@ -189,34 +189,25 @@ pub async fn save_cat(image: String) -> Result<()> {
             (url, "")
         }
     };
-    loop {
+    //
+    {
         let mut tx = DB.begin().await?;
         //
         let bicmid_id = get_or_store_bicmid(&mut tx, &bicmid).await?;
-        if bicmid_id == -1 {
-            tx.rollback().await?;
-            break;
-        }
-        //
-        let url_origin_id = get_or_store_url_origin(&mut tx, &url_origin).await?;
-        if url_origin_id == -1 {
-            tx.rollback().await?;
-            break;
-        }
+        let url_origin_id = get_or_store_url_origin(&mut tx, url_origin).await?;
         //
         sqlx::query(concat!(
             r#"INSERT INTO Cat"#,
             r#" (bicmid_id, url_origin_id, url_path)"#,
             r#" VALUES (?, ?, ?)"#
         ))
-        .bind(&bicmid_id)
-        .bind(&url_origin_id)
-        .bind(&url_path)
+        .bind(bicmid_id)
+        .bind(url_origin_id)
+        .bind(url_path)
         .execute(&mut *tx)
         .await?;
         //
         tx.commit().await?;
-        break;
     }
     //
     #[cfg(feature = "backend_delay")]
@@ -231,27 +222,26 @@ async fn sleep_x(millis: u64) -> Result<()> {
     Ok(())
 }
 
+/// Macro to generate functions that either fetch an existing ID or store a new value and return its ID.
 #[cfg(feature = "server")]
 macro_rules! simple_get_or_store {
     ($func:ident, $tbl: expr) => {
         async fn $func(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, val: &str) -> Result<i64> {
-            let mut tbl_id = -1;
-            let r = sqlx::query(concat!(r#"SELECT id FROM "#, $tbl, r#" WHERE value = ?"#))
+            match sqlx::query(concat!(r#"SELECT id FROM "#, $tbl, r#" WHERE value = ?"#))
                 .bind(val)
                 .fetch_one(&mut **tx)
-                .await;
-            if let Ok(row) = r {
-                tbl_id = row.get(0);
-            } else if let Err(sqlx::Error::RowNotFound) = r {
-                let r = sqlx::query(concat!(r#"INSERT INTO "#, $tbl, r#" (value) VALUES (?)"#))
-                    .bind(val)
-                    .execute(&mut **tx)
-                    .await?;
-                tbl_id = r.last_insert_rowid();
-            } else if let Err(e) = r {
-                return Err(e.into());
+                .await
+            {
+                Ok(row) => Ok(row.get(0)),
+                Err(sqlx::Error::RowNotFound) => {
+                    let r = sqlx::query(concat!(r#"INSERT INTO "#, $tbl, r#" (value) VALUES (?)"#))
+                        .bind(val)
+                        .execute(&mut **tx)
+                        .await?;
+                    Ok(r.last_insert_rowid())
+                }
+                Err(e) => Err(e.into()),
             }
-            Ok(tbl_id)
         }
     };
 }
