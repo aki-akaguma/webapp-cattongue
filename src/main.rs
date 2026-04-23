@@ -62,7 +62,7 @@ fn main() {
         dioxus::logger::tracing::info!("cookie_path: '{}'", &cookie_path);
         let session_layer = {
             use tower_sessions::{cookie::time::Duration, Expiry, SessionManagerLayer};
-            let store = crate::backends::session_store().await.unwrap();
+            let store = crate::backends::session_store().await?;
             SessionManagerLayer::new(store)
                 .with_name("cttg.sid")
                 .with_path(cookie_path)

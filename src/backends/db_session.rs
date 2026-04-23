@@ -9,7 +9,9 @@ pub async fn session_store() -> Result<tower_sessions_sqlx_store::SqliteStore> {
     use tower_sessions_sqlx_store::SqliteStore;
 
     let pool = create_sqlx_pool().await?;
-    let session_store = SqliteStore::new(pool).with_table_name("sessions").unwrap();
+    let session_store = SqliteStore::new(pool)
+        .with_table_name("sessions")
+        .map_err(|e| anyhow::anyhow!("Failed to set session table name: {}", e))?;
     // create table if not exists
     session_store.migrate().await?;
     Ok(session_store)

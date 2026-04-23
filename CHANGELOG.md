@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * I reorganized the dependencies in `Cargo.toml`.
 * updated crates: browserinfocm(0.2.0)
 
+### Removed
+* `.unwrap()` from server-side functions
+
 ### Fixed
 * `dx bundle --desktop --release --package-types appimage` on `Makefile`
 

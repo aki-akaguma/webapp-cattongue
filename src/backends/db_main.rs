@@ -181,8 +181,7 @@ pub async fn save_cat(image: String) -> Result<()> {
             .write(true)
             .append(true)
             .create(true)
-            .open("cattongue.txt")
-            .unwrap();
+            .open("cattongue.txt")?;
         // And then write a newline to it with the image url
         let _ = file.write_fmt(format_args!("{image}\n"));
     }
