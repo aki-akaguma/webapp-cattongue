@@ -42,20 +42,20 @@ async fn check_complete(mut is_loading: Signal<bool>, mut postponed: Signal<Post
         let v = document::eval(js).await.unwrap();
         let s = v.to_string();
         if s == "true" {
-            //dioxus_logger::tracing::debug!("img elem: '{s:?}'");
+            //dioxus::logger::tracing::debug!("img elem: '{s:?}'");
             if *is_loading.read() {
                 is_loading.set(false);
-                dioxus_logger::tracing::debug!("set is_loading: false");
+                dioxus::logger::tracing::debug!("set is_loading: false");
             } else {
-                dioxus_logger::tracing::debug!("already is_loading: false");
+                dioxus::logger::tracing::debug!("already is_loading: false");
             }
             break;
         } else {
-            //dioxus_logger::tracing::debug!("img elem: '{s:?}'");
+            //dioxus::logger::tracing::debug!("img elem: '{s:?}'");
             async_sleep(50).await;
         }
         if !*is_loading.read() {
-            dioxus_logger::tracing::debug!("is_loading: false");
+            dioxus::logger::tracing::debug!("is_loading: false");
             break;
         }
     }
@@ -73,31 +73,31 @@ pub fn CatView() -> Element {
     let mut postponed = use_signal(|| postponed_call(10, move || {}));
     let mut img_src = use_resource(move || async move {
         is_loading.set(true);
-        dioxus_logger::tracing::debug!("set is_loading: true");
+        dioxus::logger::tracing::debug!("set is_loading: true");
         loading_count += 1;
         //let url = "https://aws.random.cat/meow";
         let url = "https://api.thecatapi.com/v1/images/search";
         let resp = reqwest::get(url).await;
         let r = if let Err(_e) = resp {
-            dioxus_logger::tracing::info!("error: {_e}");
+            dioxus::logger::tracing::info!("error: {_e}");
             is_loading.set(false);
             "".to_string()
         } else {
             let body = resp.unwrap();
             let r = body.json::<Vec<CatApi>>().await;
             if let Err(_e) = r {
-                dioxus_logger::tracing::info!("error: {_e}");
+                dioxus::logger::tracing::info!("error: {_e}");
                 is_loading.set(false);
                 "".to_string()
             } else {
                 let r1 = r.unwrap()[0].url.clone();
                 let a = postponed_call(3000, move || {
-                    dioxus_logger::tracing::debug!("postponed: call");
+                    dioxus::logger::tracing::debug!("postponed: call");
                     if *is_loading.read() {
                         is_loading.set(false);
                         let a = postponed_call(10, move || {});
                         let _ = postponed.replace(a);
-                        dioxus_logger::tracing::debug!("postponed: set is_loading: false");
+                        dioxus::logger::tracing::debug!("postponed: set is_loading: false");
                     }
                 });
                 let _ = postponed.replace(a);
@@ -107,7 +107,7 @@ pub fn CatView() -> Element {
         };
         loading_count -= 1;
         if *loading_count.read() > 0 {
-            dioxus_logger::tracing::info!("loading_count: '{}'", *loading_count.read());
+            dioxus::logger::tracing::info!("loading_count: '{}'", *loading_count.read());
         }
         r
     });

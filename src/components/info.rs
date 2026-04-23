@@ -1,33 +1,22 @@
-use browserinfocm::browserinfo::{BroInfo, Browser};
 use browserinfocm::BrowserInfoCm;
+use browserinfocm::BrowserInfoState;
 use dioxus::prelude::*;
 
 /// the component of browser information
 #[component]
 pub fn Info() -> Element {
-    // browser info
-    let broinfo_sig = use_signal(BroInfo::default);
-    let browser_sig = use_signal(Browser::default);
-    let bicmid_sig = use_signal(String::new);
-    let user_sig = use_signal(String::new);
+    // Signals for storing data gathered by BrowserInfoCm.
+    let state_sig = use_signal(BrowserInfoState::default);
 
-    //let brg = browser_sig.read().clone();
-    //let bim = broinfo_sig.read().clone();
-    /*
-    let bicmid_s = bicmid_sig.read().clone();
-    let user_s = user_sig.read().clone();
-    */
+    //
     let mut check_session_sig = use_signal(|| false);
-    /*
-    let check_s = check_session_sig.read().to_string();
-    */
 
     use_effect(move || {
         spawn(async move {
             let bicmid = {
                 let mut bicmid: String;
                 loop {
-                    bicmid = bicmid_sig.read().clone();
+                    bicmid = state_sig.read().bicmid.clone();
                     if bicmid.is_empty() {
                         async_sleep_aki::async_sleep(1).await;
                         continue;
@@ -42,12 +31,7 @@ pub fn Info() -> Element {
     });
 
     rsx! {
-        BrowserInfoCm {
-            broinfo: broinfo_sig,
-            browser: browser_sig,
-            bicmid: bicmid_sig,
-            user: user_sig,
-        }
+        BrowserInfoCm { state: state_sig }
         {}
     }
 }

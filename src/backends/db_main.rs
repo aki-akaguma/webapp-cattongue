@@ -56,10 +56,10 @@ fn get_db_path_() -> PathBuf {
 #[post("/api/v1/session", session: tower_sessions::Session)]
 pub async fn check_session(bicmid: String) -> Result<bool> {
     if let Some(session_bicmid) = session.get::<String>("bicmid").await? {
-        dioxus_logger::tracing::debug!("bicmid: '{}' '{}'", &session_bicmid, &bicmid);
+        dioxus::logger::tracing::debug!("bicmid: '{}' '{}'", &session_bicmid, &bicmid);
         Ok(bicmid.as_str() == session_bicmid.as_str())
     } else {
-        dioxus_logger::tracing::debug!("insert bicmid: '{}'", &bicmid);
+        dioxus::logger::tracing::debug!("insert bicmid: '{}'", &bicmid);
         session.insert("bicmid", &bicmid).await?;
         Ok(true)
     }

@@ -19,10 +19,10 @@ fn main() {
     console_error_panic_hook::set_once();
 
     #[cfg(not(debug_assertions))]
-    let level = dioxus_logger::tracing::Level::INFO;
+    let level = dioxus::logger::tracing::Level::INFO;
     #[cfg(debug_assertions)]
-    let level = dioxus_logger::tracing::Level::DEBUG;
-    dioxus_logger::init(level).expect("failed to init logger");
+    let level = dioxus::logger::tracing::Level::DEBUG;
+    dioxus::logger::init(level).expect("failed to init logger");
 
     // In the case of release desktop and release mobile,
     // connect backend calls to public api
@@ -59,7 +59,7 @@ fn main() {
             Ok(s) => format!("/{s}"),
             Err(_e) => "/".to_string(),
         };
-        dioxus_logger::tracing::info!("cookie_path: '{}'", &cookie_path);
+        dioxus::logger::tracing::info!("cookie_path: '{}'", &cookie_path);
         let session_layer = {
             use tower_sessions::{cookie::time::Duration, Expiry, SessionManagerLayer};
             let store = crate::backends::session_store().await.unwrap();

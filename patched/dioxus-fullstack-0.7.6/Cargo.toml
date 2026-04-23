@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "dioxus-fullstack"
-version = "0.7.5"
+version = "0.7.6"
 authors = [
     "Jonathan Kelley",
     "Evan Almloff",
@@ -128,32 +128,32 @@ features = [
 ]
 
 [dependencies.dioxus-asset-resolver]
-version = "0.7.4"
+version = "0.7.6"
 features = ["native"]
 
 [dependencies.dioxus-cli-config]
-version = "0.7.4"
+version = "0.7.6"
 
 [dependencies.dioxus-core]
-version = "0.7.4"
+version = "0.7.6"
 
 [dependencies.dioxus-fullstack-core]
-version = "0.7.4"
+version = "0.7.6"
 default-features = false
 
 [dependencies.dioxus-fullstack-macro]
-version = "0.7.4"
+version = "0.7.6"
 default-features = false
 
 [dependencies.dioxus-hooks]
-version = "0.7.4"
+version = "0.7.6"
 
 [dependencies.dioxus-html]
-version = "0.7.4"
+version = "0.7.6"
 default-features = false
 
 [dependencies.dioxus-signals]
-version = "0.7.4"
+version = "0.7.6"
 
 [dependencies.form_urlencoded]
 version = "1.2.1"
