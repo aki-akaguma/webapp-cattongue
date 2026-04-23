@@ -10,17 +10,13 @@ use std::path::PathBuf;
 
 #[cfg(feature = "server")]
 fn data_base_dir() -> PathBuf {
-    let key = "CATTONGUE_DB_BASE_PATH";
-    let data_dir = if let Ok(s) = std::env::var(key) {
-        let pb = PathBuf::from(s);
-        let _ = std::fs::create_dir_all(&pb);
-        pb
-    } else {
-        data_dir()
-    };
-    data_dir
+    let cfg = crate::config::AppConfig::global();
+    let pb = PathBuf::from(&cfg.database.base_path);
+    let _ = std::fs::create_dir_all(&pb);
+    pb
 }
 
+/*
 #[cfg(feature = "server")]
 fn data_dir() -> PathBuf {
     let data_dir: PathBuf;
@@ -35,6 +31,7 @@ fn data_dir() -> PathBuf {
     }
     return data_dir;
 }
+*/
 
 #[cfg(feature = "backend_homedir")]
 #[cfg(feature = "server")]

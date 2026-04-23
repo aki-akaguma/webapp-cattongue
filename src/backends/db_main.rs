@@ -38,18 +38,9 @@ async fn create_sqlx_pool() -> Result<sqlx::sqlite::SqlitePool> {
 
 #[cfg(feature = "server")]
 fn get_db_path_() -> PathBuf {
-    let key1 = "CATTONGUE_DB_PATH";
-    if let Ok(s) = std::env::var(key1) {
-        return PathBuf::from(s);
-    }
+    let cfg = crate::config::AppConfig::global();
     let mut data_dir = super::data_base_dir();
-    let key3 = "CATTONGUE_DB_FILE";
-    let db_file = if let Ok(s) = std::env::var(key3) {
-        s
-    } else {
-        "cattongue.sqlite3".to_string()
-    };
-    data_dir.push(db_file);
+    data_dir.push(&cfg.database.db_file);
     data_dir
 }
 

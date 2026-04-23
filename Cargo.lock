@@ -517,6 +517,7 @@ dependencies = [
  "rust-version-info-file",
  "serde",
  "sqlx",
+ "toml 0.8.2",
  "tower-sessions",
  "tower-sessions-sqlx-store",
 ]

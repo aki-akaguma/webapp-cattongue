@@ -1,0 +1,7 @@
+[database]
+base_path = "/var/local/data/cattongue"
+db_file = "cattongue.sqlite3"
+session_db_file = "sessions.sqlite3"
+
+[client]
+backend_url = "https://aki.omusubi.org/cattongue"

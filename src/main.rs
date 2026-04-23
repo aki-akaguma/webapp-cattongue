@@ -7,9 +7,14 @@ use views::{CatView, Favorites};
 
 mod backends;
 mod components;
+mod config;
 mod views;
 
 fn main() {
+    // Load configuration
+    let config = config::AppConfig::load().expect("Failed to load config");
+    config::CONFIG.set(config).expect("Failed to set global config");
+
     // You can set the ports and IP manually with env vars:
     //   server launch:
     //     IP="0.0.0.0" PORT=8080 ./server
@@ -31,7 +36,7 @@ fn main() {
     {
         // Specify the URL that previously delpoyed the public webapp.
         // This webapp was created with `dx bundle --web`.
-        let backend_url = "https://aki.omusubi.org/cattongue";
+        let backend_url = &config::AppConfig::global().client.backend_url;
         dioxus_fullstack::set_server_url(backend_url);
     }
 
