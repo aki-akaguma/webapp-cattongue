@@ -1,9 +1,11 @@
+use config::{Config, Environment, File, FileFormat};
 use serde::Deserialize;
 use std::sync::OnceLock;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct AppConfig {
     pub database: DatabaseConfig,
+    #[allow(dead_code)]
     pub client: ClientConfig,
 }
 
@@ -16,6 +18,7 @@ pub struct DatabaseConfig {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ClientConfig {
+    #[allow(dead_code)]
     pub backend_url: String,
 }
 
@@ -23,9 +26,7 @@ pub static CONFIG: OnceLock<AppConfig> = OnceLock::new();
 
 impl AppConfig {
     pub fn load() -> anyhow::Result<Self> {
-        let config_str = std::fs::read_to_string("config.toml").unwrap_or_else(|_| {
-            // デフォルト設定
-            r#"
+        let default_toml = r#"
 [database]
 base_path = "/var/local/data/cattongue"
 db_file = "cattongue.sqlite3"
@@ -33,29 +34,21 @@ session_db_file = "sessions.sqlite3"
 
 [client]
 backend_url = "https://aki.omusubi.org/cattongue"
-"#
-            .to_string()
-        });
-        let mut config: AppConfig = toml::from_str(&config_str)?;
+"#;
 
-        // Overriding with environment variables
-        if let Ok(val) = std::env::var("CATTONGUE_DB_BASE_PATH") {
-            config.database.base_path = val;
-        }
-        if let Ok(val) = std::env::var("CATTONGUE_DB_FILE") {
-            config.database.db_file = val;
-        }
-        if let Ok(val) = std::env::var("CATTONGUE_DB_SESSION_PATH") {
-            config.database.session_db_file = val;
-        }
-        if let Ok(val) = std::env::var("CATTONGUE_BACKEND_URL") {
-            config.client.backend_url = val;
-        }
+        let s = Config::builder()
+            // 1. Load defaults
+            .add_source(File::from_str(default_toml, FileFormat::Toml))
+            // 2. Load from config.toml if it exists
+            .add_source(File::with_name("config").required(false))
+            // 3. Environment variables (e.g., CATTONGUE__DATABASE__BASE_PATH)
+            .add_source(Environment::with_prefix("CATTONGUE").separator("__"))
+            .build()?;
 
+        let config: AppConfig = s.try_deserialize()?;
         Ok(config)
     }
 
-    #[cfg(feature = "server")]
     pub fn global() -> &'static AppConfig {
         CONFIG.get().expect("Config is not initialized")
     }

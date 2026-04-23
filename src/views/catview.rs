@@ -21,13 +21,12 @@ pub fn CatView() -> Element {
 
     let mut img_src = use_resource(move || async move {
         is_loading.set(true);
-        dioxus::logger::tracing::debug!("set is_loading: true");
         error_msg.set(None);
+        dioxus::logger::tracing::debug!("set is_loading: true");
         loading_count += 1;
 
         let url = "https://api.thecatapi.com/v1/images/search";
 
-        // Receive the result of asynchronous processing as Result
         let fetch_result = async {
             let resp = reqwest::get(url)
                 .await
@@ -44,7 +43,7 @@ pub fn CatView() -> Element {
 
         let r = match fetch_result {
             Ok(r1) => {
-                // Timeout setting if it cannot be loaded after 3 seconds
+                // Timeout if it cannot be loaded after 3 seconds
                 let a = postponed_call(3000, move || {
                     if *is_loading.read() {
                         is_loading.set(false);
@@ -55,41 +54,10 @@ pub fn CatView() -> Element {
                 r1
             }
             Err(e) => {
-                dioxus::logger::tracing::error!("{}", e);
+                dioxus::logger::tracing::info!("error: {e}");
                 error_msg.set(Some(e));
                 is_loading.set(false);
                 "".to_string()
-            }
-        };
-
-        loading_count -= 1;
-        r
-    });
-
-    /*
-        let resp = reqwest::get(url).await;
-        let r = if let Err(_e) = resp {
-            dioxus::logger::tracing::info!("error: {_e}");
-            is_loading.set(false);
-            "".to_string()
-        } else {
-            let body = resp.unwrap();
-            let r = body.json::<Vec<CatApi>>().await;
-            if let Err(_e) = r {
-                dioxus::logger::tracing::info!("error: {_e}");
-                is_loading.set(false);
-                "".to_string()
-            } else {
-                let r1 = r.unwrap()[0].url.clone();
-                // 3秒経っても読み込めない場合のタイムアウト
-                let a = postponed_call(3000, move || {
-                    if *is_loading.read() {
-                        is_loading.set(false);
-                        dioxus::logger::tracing::debug!("timeout: set is_loading: false");
-                    }
-                });
-                let _ = postponed.replace(a);
-                r1
             }
         };
 
@@ -99,7 +67,6 @@ pub fn CatView() -> Element {
         }
         r
     });
-    */
 
     rsx! {
         div { id: "catview",
@@ -113,6 +80,7 @@ pub fn CatView() -> Element {
                     id: "catimg",
                     src: img_src.cloned().unwrap_or_default(),
                     onload: move |_| {
+                        // Executed when the image has finished loading
                         is_loading.set(false);
                         dioxus::logger::tracing::debug!("img onload: set is_loading: false");
                         // Cancel timer for timeout (overwrite with immediate execution)
@@ -123,7 +91,7 @@ pub fn CatView() -> Element {
         }
         div { id: "buttons",
             button {
-                // Automatically disabled in conjunction with is_loading signal
+                // is_loadingシグナルと連動して自動で無効化される
                 disabled: *is_loading.read(),
                 onclick: move |_| async move {
                     img_src.restart();
@@ -132,12 +100,14 @@ pub fn CatView() -> Element {
                 "skip"
             }
             button {
-                // Disable save button when there is no image or while loading
                 disabled: *is_loading.read() || img_src.read().as_ref().is_none_or(|s| s.is_empty()),
                 onclick: move |_| async move {
-                    let current = img_src.cloned().unwrap();
-                    img_src.restart();
-                    _ = crate::backends::save_cat(current).await;
+                    if let Some(current) = img_src.cloned() {
+                        if !current.is_empty() {
+                            img_src.restart();
+                            _ = crate::backends::save_cat(current).await;
+                        }
+                    }
                 },
                 id: "save",
                 "save!"

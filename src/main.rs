@@ -7,13 +7,20 @@ use views::{CatView, Favorites};
 
 mod backends;
 mod components;
-mod config;
 mod views;
+
+#[cfg(feature = "server")]
+mod config;
 
 fn main() {
     // Load configuration
-    let config = config::AppConfig::load().expect("Failed to load config");
-    config::CONFIG.set(config).expect("Failed to set global config");
+    #[cfg(feature = "server")]
+    {
+        let config = config::AppConfig::load().expect("Failed to load config");
+        config::CONFIG
+            .set(config)
+            .expect("Failed to set global config");
+    }
 
     // You can set the ports and IP manually with env vars:
     //   server launch:

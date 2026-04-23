@@ -30,6 +30,7 @@ dioxus-desktop = { version = "0.7.5", optional = true }
 anyhow = { version = "1.0" }
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.8"
+config = { version = "0.14", features = ["toml"] }
 
 # what dioxus depends on, optional
 reqwest = { version = "0.12", default-features = false, features = ["json"] }
