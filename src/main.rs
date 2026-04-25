@@ -43,7 +43,8 @@ fn main() {
     {
         // Specify the URL that previously delpoyed the public webapp.
         // This webapp was created with `dx bundle --web`.
-        let backend_url = &config::AppConfig::global().client.backend_url;
+        //let backend_url = &config::AppConfig::global().client.backend_url;
+        let backend_url = "https://aki.omusubi.org/cattongue";
         dioxus_fullstack::set_server_url(backend_url);
     }
 

@@ -6,8 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.1.11] (2026-04-27)
 ### Added
 * `config` crate for server app config
+
+### Fixed
+* failed to resolve: could not find `AppConfig` in `config` on desktop
 
 ### Changed
 * update crate: browserinfocm(0.2.1)
@@ -20,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 * `dx bundle --desktop --release --package-types appimage` on `Makefile`
-
 
 ## [0.1.10] (2026-04-11)
 ### Changed
@@ -106,7 +111,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * first commit
 
-[Unreleased]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.10..HEAD
+[Unreleased]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.11..HEAD
+[0.1.11]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.10..v0.1.11
 [0.1.10]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.9..v0.1.10
 [0.1.9]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.8..v0.1.9
 [0.1.8]: https://github.com/aki-akaguma/webapp-cattongue/compare/v0.1.7..v0.1.8
