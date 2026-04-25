@@ -23,8 +23,8 @@ dioxus-fullstack = { path = "./patched/dioxus-fullstack-0.7.6" }
 
 [dependencies]
 # dioxus family
-dioxus = { version = "0.7.5", features = ["router", "fullstack"] }
-dioxus-desktop = { version = "0.7.5", optional = true }
+dioxus = { version = "0.7.6", features = ["router", "fullstack"] }
+dioxus-desktop = { version = "0.7.6", optional = true }
 
 # what dioxus depends on
 anyhow = { version = "1.0" }
@@ -44,7 +44,7 @@ tower-sessions-sqlx-store = { version = "0.15", features = ["sqlite"], optional 
 
 #browserinfocm = { path = "../browserinfocm", default-features = false }
 #browserinfocm = { git = "https://github.com/aki-akaguma/browserinfocm.git" }
-browserinfocm = "0.2.0"
+browserinfocm = "0.2.1"
 
 #async-sleep-aki = {path="../async-sleep-aki"}
 async-sleep-aki = "0.1"

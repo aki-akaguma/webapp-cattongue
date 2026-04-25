@@ -443,14 +443,15 @@ dependencies = [
 
 [[package]]
 name = "browserinfocm"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5567ee4d6894428d17e445db914667d1bcdae1b376e21531d10206af6f6ab1a3"
+checksum = "7d73adaae3bc9b266190a79c17d2845a1717935f4a4db64377c1f5340b4a9ae4"
 dependencies = [
  "anyhow",
  "async-sleep-aki",
  "base64 0.22.1",
  "browserinfo",
+ "config",
  "dioxus",
  "dirs",
  "hmac-sha256",

@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `config` crate for server app config
 
 ### Changed
+* update crate: browserinfocm(0.2.1)
 * error resiliency in `src/view/catview.rs`
 * update crate: dioxus(0.7.6)
 * I reorganized the dependencies in `Cargo.toml`.
-* updated crates: browserinfocm(0.2.0)
 
 ### Removed
 * `.unwrap()` from server-side functions
