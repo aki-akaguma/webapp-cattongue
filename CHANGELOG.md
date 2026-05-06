@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * update to 2024 edition
 * update crate: dioxus(0.7.7), browserinfocm(0.2.2)
 
+### Fixed
+* `clippy::collapsible\_if`
+
 
 ## [0.1.11] (2026-04-27)
 ### Added

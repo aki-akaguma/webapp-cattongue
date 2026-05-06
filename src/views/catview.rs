@@ -102,11 +102,10 @@ pub fn CatView() -> Element {
             button {
                 disabled: *is_loading.read() || img_src.read().as_ref().is_none_or(|s| s.is_empty()),
                 onclick: move |_| async move {
-                    if let Some(current) = img_src.cloned() {
-                        if !current.is_empty() {
+                    if let Some(current) = img_src.cloned()
+                        && !current.is_empty() {
                             img_src.restart();
                             _ = crate::backends::save_cat(current).await;
-                        }
                     }
                 },
                 id: "save",
