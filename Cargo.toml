@@ -1,6 +1,6 @@
 [package]
 name = "cattongue"
-version = "0.1.11"
+version = "0.1.12"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 edition = "2024"
 description = """
