@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * update crate: dioxus(0.7.9), browserinfocm(0.2.3)
 
+### Removed
+* `bundle-android-wv` from `Makefile`
+
 
 ## [0.1.12] (2026-05-06)
 ### Changed
